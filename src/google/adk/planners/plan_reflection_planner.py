@@ -9,7 +9,7 @@ from ..agents.readonly_context import ReadonlyContext
 from ..models.llm_request import LlmRequest
 from .base_planner import BasePlanner
 
-# 使用与 PlanReActPlanner 兼容的标签
+# Use tags compatible with PlanReActPlanner
 PLANNING_TAG = '/*PLANNING*/'
 REASONING_TAG = '/*REASONING*/'
 ACTION_TAG = '/*ACTION*/'
@@ -70,7 +70,7 @@ class PlanReflectionPlanner(BasePlanner):
         return text[: index + len(separator)], text[index + len(separator):]
 
     def _handle_non_function_call_parts(
-            self, response_part: types.Part, preserved_parts: list[types.Part]
+            self, response_part: types.Part, preserved_parts: List[types.Part]
     ):
         """Handles non-function-call parts of the response."""
         if response_part.text and FINAL_ANSWER_TAG in response_part.text:
@@ -85,7 +85,6 @@ class PlanReflectionPlanner(BasePlanner):
                 preserved_parts.append(types.Part(text=final_answer_text))
         else:
             response_text = response_part.text or ''
-            # 包含所有标签，包括 REFLECTION_TAG
             if response_text and (
                     any(
                         response_text.startswith(tag)
@@ -142,7 +141,7 @@ Follow this structured format when answering the question:
 
         planning_preamble = f"""
 {PLANNING_TAG} Requirements:
-Create a numbered plan that breaks down the user query into actionable steps. Each step should specify which tools to use.  
+Create a numbered plan that breaks down the user query into actionable steps. Each step should specify which tools to use.
 """
 
         reasoning_preamble = """
@@ -164,7 +163,7 @@ This section is REQUIRED - do not proceed to final answer without reflection.
 
         replanning_preamble = f"""
 {REPLANNING_TAG} Requirements (conditional):
-Only if reflection reveals issues, create a revised plan and execute it with new {ACTION_TAG} and {REASONING_TAG} sections. 
+Only if reflection reveals issues, create a revised plan and execute it with new {ACTION_TAG} and {REASONING_TAG} sections.
 """
 
         final_answer_preamble = f"""
